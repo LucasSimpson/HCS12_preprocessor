@@ -1,0 +1,37 @@
+;******
+;* Test program by Lucas Simpson
+;******
+
+; export symbols
+            XDEF Entry, _Startup            ; export 'Entry' symbol
+            ABSENTRY Entry        ; for absolute assembly: mark this as application entry point
+
+
+
+; Include derivative-specific definitions 
+		INCLUDE 'derivative.inc' 
+
+ROMStart    EQU  $0400  ; absolute address to place my code/constant data
+
+; variable/data section
+
+            ORG RAMStart
+ ; Insert here your data definition.
+
+
+; code section
+            ORG   ROMStart
+_Startup
+Entry
+            LDS   #RAMEnd+1       ; initialize the stack pointer
+
+
+loop (3){
+	NOP
+	NOP
+	loop (5) {
+		NOP
+		NOP
+	}
+	
+}
