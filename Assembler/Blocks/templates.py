@@ -106,3 +106,13 @@ def interrupt_block ():
         ORG   $FFFE
         DC.W  Entry           ; Reset Vector
         """
+
+def loop_inf_pre_block ():
+	return """
+{label} NOP ; Infinite loop start.
+	"""
+
+def loop_inf_post_block ():
+	return """
+	JMP  {label}
+	"""

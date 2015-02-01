@@ -19,16 +19,17 @@ _Startup:
 ; ***************************************
 
 
-;  Loop 5 times.
-            LDAA #$05                       
+inf_00      NOP                             ;  Infinite loop start.
+;  Loop 4 times.
+            LDAA #$04                       
             STAA $1501                      
 loop_00     DECA                            
             STAA $1501                      
             LDAA #$01                       
             STAA PTJ                        ;  Turn on LED
 
-;  Delay for 250 ms
-            LDX  #5                         
+;  Delay for 1000 ms
+            LDX  #20                        
 delay_00    NOP                             
             LDY  #50000                     
 delay_01    NOP                             
@@ -51,8 +52,8 @@ delay_03    NOP
             LDAA #$00                       
             STAA PTJ                        ;  Turn off LED
 
-;  Delay for 250 ms
-            LDX  #5                         
+;  Delay for 1000 ms
+            LDX  #20                        
 delay_04    NOP                             
             LDY  #50000                     
 delay_05    NOP                             
@@ -75,6 +76,212 @@ delay_07    NOP
             LDAA $1501                      
             BGT  loop_00                    
 ;  Loop end.
+
+;  Loop 8 times.
+            LDAA #$08                       
+            STAA $1501                      
+loop_01     DECA                            
+            STAA $1501                      
+            LDAA #$01                       
+            STAA PTJ                        ;  Turn on LED
+
+;  Delay for 500 ms
+            LDX  #10                        
+delay_08    NOP                             
+            LDY  #50000                     
+delay_09    NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            DBNE Y, delay_09                
+            DBNE X, delay_08                
+            LDX  #1                         
+delay_10    DBNE X, delay_11                
+            NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            JMP  delay_10                   
+delay_11    NOP                             
+;  End of delay.
+
+            LDAA #$00                       
+            STAA PTJ                        ;  Turn off LED
+
+;  Delay for 500 ms
+            LDX  #10                        
+delay_12    NOP                             
+            LDY  #50000                     
+delay_13    NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            DBNE Y, delay_13                
+            DBNE X, delay_12                
+            LDX  #1                         
+delay_14    DBNE X, delay_15                
+            NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            JMP  delay_14                   
+delay_15    NOP                             
+;  End of delay.
+
+            LDAA $1501                      
+            BGT  loop_01                    
+;  Loop end.
+
+;  Loop 8 times.
+            LDAA #$08                       
+            STAA $1501                      
+loop_02     DECA                            
+            STAA $1501                      
+            LDAA #$01                       
+            STAA PTJ                        ;  Turn on LED
+
+;  Delay for 250 ms
+            LDX  #5                         
+delay_16    NOP                             
+            LDY  #50000                     
+delay_17    NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            DBNE Y, delay_17                
+            DBNE X, delay_16                
+            LDX  #1                         
+delay_18    DBNE X, delay_19                
+            NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            JMP  delay_18                   
+delay_19    NOP                             
+;  End of delay.
+
+            LDAA #$00                       
+            STAA PTJ                        ;  Turn off LED
+
+;  Delay for 250 ms
+            LDX  #5                         
+delay_20    NOP                             
+            LDY  #50000                     
+delay_21    NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            DBNE Y, delay_21                
+            DBNE X, delay_20                
+            LDX  #1                         
+delay_22    DBNE X, delay_23                
+            NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            JMP  delay_22                   
+delay_23    NOP                             
+;  End of delay.
+
+            LDAA $1501                      
+            BGT  loop_02                    
+;  Loop end.
+
+;  Loop 8 times.
+            LDAA #$08                       
+            STAA $1501                      
+loop_03     DECA                            
+            STAA $1501                      
+            LDAA #$01                       
+            STAA PTJ                        ;  Turn on LED
+
+;  Delay for 125 ms
+            LDX  #2                         
+delay_24    NOP                             
+            LDY  #50000                     
+delay_25    NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            DBNE Y, delay_25                
+            DBNE X, delay_24                
+            LDX  #25001                     
+delay_26    DBNE X, delay_27                
+            NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            JMP  delay_26                   
+delay_27    NOP                             
+;  End of delay.
+
+            LDAA #$00                       
+            STAA PTJ                        ;  Turn off LED
+
+;  Delay for 125 ms
+            LDX  #2                         
+delay_28    NOP                             
+            LDY  #50000                     
+delay_29    NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            DBNE Y, delay_29                
+            DBNE X, delay_28                
+            LDX  #25001                     
+delay_30    DBNE X, delay_31                
+            NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            JMP  delay_30                   
+delay_31    NOP                             
+;  End of delay.
+
+            LDAA $1501                      
+            BGT  loop_03                    
+;  Loop end.
+
+;  Loop 16 times.
+            LDAA #$10                       
+            STAA $1501                      
+loop_04     DECA                            
+            STAA $1501                      
+            LDAA #$01                       
+            STAA PTJ                        ;  Turn on LED
+
+;  Delay for 62 ms
+            LDX #62000                      
+delay_32    NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            DBNE X, delay_32                
+
+            LDAA #$00                       
+            STAA PTJ                        ;  Turn off LED
+
+;  Delay for 63 ms
+            LDX #63000                      
+delay_33    NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            DBNE X, delay_33                
+
+            LDAA $1501                      
+            BGT  loop_04                    
+;  Loop end.
+
+            JMP  inf_00                     
 
 ; ***************************************
 ; * Interrupt Vectors

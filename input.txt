@@ -1,19 +1,42 @@
 header (Demo program by Lucas Simpson)
 
-
 start ()
 
-loop (5) {
+loopinf {
+	loop (4) {
+		LED (on)
+		delay (1000)
+		LED (off)
+		delay (1000)
+	}
 
-	LED (on)
+	loop (8) {
+		LED (on)
+		delay (500)
+		LED (off)
+		delay (500)
+	}
 
-	delay (250)
+	loop (8) {
+		LED (on)
+		delay (250)
+		LED (off)
+		delay (250)
+	}
 
-	LED (off)
-
-	delay (250)
-
+	loop (8) {
+		LED (on)
+		delay (125)
+		LED (off)
+		delay (125)
+	}
+	
+	loop (16) {
+		LED (on)
+		delay (62)
+		LED (off)
+		delay (63)
+	}
 }
-
 
 interrupt ()

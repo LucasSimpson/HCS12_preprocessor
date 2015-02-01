@@ -81,9 +81,24 @@ class LongLoopBlock (NestedBlock):
         raw = templates.long_loop_block ().format (**dic)
         return bf ().create (raw)
 
+class LoopInfBlock (NestedBlock):
+    regex = r'loopinf'
+
+    def pre_blocks (self):
+        self.label = lg ().new_label ('inf')
+        dic = {'label': self.label}
+        raw = templates.loop_inf_pre_block ().format (**dic)
+        return bf ().create (raw)
+
+    def post_blocks (self):
+        dic = {'label': self.label}
+        raw = templates.loop_inf_post_block ().format (**dic)
+        return bf ().create (raw)
+
 def get_nested_classes ():
     return [
         LoopBlock,
         LongLoopBlock,
+        LoopInfBlock,
         NestedBlock,
     ]

@@ -79,8 +79,8 @@ class BlockFactory (object):
             f = open (file_out, 'w')
             f.write (output)
             f.close ()
-
-        print output
+        else:
+            print output
         print 'Done'
 
     def nested_block (self, raw_):
