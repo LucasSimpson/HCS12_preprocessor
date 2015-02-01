@@ -1,18 +1,39 @@
+
 def delay_block ():
 	return """
-        ; {delay}ms delay start.
-        loop ({delay}) {{
-            LDX #999 ;
-{label}     NOP
-            NOP
-            NOP
-            NOP
-            NOP
-            DBNE X, {label}
-        }}
-        ; {delay}ms delay end.
+        ; Delay for {delay_human} ms
+        LDX #{delay} 
+{label} NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        DBNE X, {label}
         """
 
+def long_delay_block ():
+        return """
+        ; Delay for {delay_human} ms
+        LDX  #{outer_num} 
+{label_1} NOP
+        LDY  #{inner_num}
+{label_2} NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        DBNE Y, {label_2}
+        DBNE X, {label_1}
+        LDX  #{offset}
+{label_3} DBNE X, {label_4}
+        NOP
+        NOP
+        NOP
+        NOP
+        JMP  {label_3}
+{label_4} NOP
+        ; End of delay.
+        """
 
 def start_block ():
 	return """
@@ -31,6 +52,11 @@ ROMStart    EQU  {rom_start}  ; absolute address to place my code/constant data
 
 Entry:
 _Startup:
+
+            LDAA #$01      ; set the LSb (b0), clear all others (b7-b1)
+            STAA DDRJ      ; configure uC's Data Direction Register for Port J
+
+        header (Code start)
         """
 
 def header_block ():
@@ -43,15 +69,16 @@ def header_block ():
 def loop_pre_block ():
 	return """
         ; Loop {num_loops_human} times.
-        LDAA {num_loops}
+        LDAA #{num_loops}
         STAA {sp}
-{label} NOP
+{label} DECA
+        STAA {sp}
         """
 
 def loop_post_block ():
 	return """
         LDAA {sp}
-        DBNE A, {label}
+        BGT  {label}
         ; Loop end.
         """
 
@@ -66,3 +93,16 @@ def long_loop_block ():
 		{inside_raw}
 	}}
 	"""
+
+def LED_block ():
+        return """
+        LDAA {state}
+        STAA PTJ   ; Turn {state_human} LED
+        """
+
+def interrupt_block ():
+        return """
+        header (Interrupt Vectors)
+        ORG   $FFFE
+        DC.W  Entry           ; Reset Vector
+        """

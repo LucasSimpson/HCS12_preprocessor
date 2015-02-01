@@ -2,6 +2,7 @@ import templates
 
 from BlockFactory import bf
 from ..LabelGenerator import lg
+from ..utils.factor import long_delay_factor
 
 class BaseBlock (object):
     regex = r'\.*'
@@ -44,12 +45,34 @@ class AssemblyBlock (BaseBlock):
         return result
 
 class DelayBlock (BaseBlock):
-    regex = r'delay[\s]*\((?P<delay>[\d]*)\)'
+    regex = r'delay[\s]*\((?P<delay>[0123456]?[012345])\)'
 
     def assembly (self):
         label = lg ().new_label ('delay')
-        dic = {'label':label, 'delay': self.delay}
+        dic = {
+            'label':label,
+            'delay': str (int (self.delay) * 1000),
+            'delay_human': self.delay,
+        }
         raw = templates.delay_block ().format (**dic)
+        return bf ().nested_block (raw).assembly ()
+
+class LongDelayBlock (BaseBlock):
+    regex = r'delay[\s]*\((?P<delay>[\d]*)\)'
+
+    def assembly (self):
+        iterations = long_delay_factor (self.delay)
+        dic = {
+            'delay_human': self.delay,
+            'outer_num': str (iterations [0]),
+            'inner_num': str (iterations [1] * 1000),
+            'offset': str (iterations [2] * 1000 + 1),
+            'label_1': lg ().new_label ('delay'),
+            'label_2': lg ().new_label ('delay'),
+            'label_3': lg ().new_label ('delay'),
+            'label_4': lg ().new_label ('delay'),
+        }
+        raw = templates.long_delay_block ().format (**dic)
         return bf ().nested_block (raw).assembly ()
 
 class StartBlock (BaseBlock):
@@ -71,11 +94,30 @@ class HeaderBlock (BaseBlock):
         raw = templates.header_block ().format (**dic)
         return bf ().nested_block (raw).assembly ()
 
+class LEDBlock (BaseBlock):
+    regex = r'LED[\s]*\((?P<state>(on|off))\)'
+
+    def assembly (self):
+        data = {'on':'#$01', 'off':'#$00'} [self.state]
+        dic = {'state':data, 'state_human':self.state}
+        raw = templates.LED_block ().format (**dic)
+        return bf ().nested_block (raw).assembly ()
+
+class InterruptBlock (BaseBlock):
+    regex = r'interrupt[\s]*\([\s]*\)'
+
+    def assembly (self):
+        raw = templates.interrupt_block ()
+        return bf ().nested_block (raw).assembly ()
+
 
 
 def get_static_classes ():
     return [
+        InterruptBlock,
+        LEDBlock,
         DelayBlock,
+        LongDelayBlock,
         StartBlock,
         HeaderBlock,
         AssemblyBlock,

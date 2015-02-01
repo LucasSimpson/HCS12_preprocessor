@@ -1,6 +1,19 @@
 header (Demo program by Lucas Simpson)
-header (Does a delay of 1s)
+
 
 start ()
 
-delay (1000)
+loop (5) {
+
+	LED (on)
+
+	delay (250)
+
+	LED (off)
+
+	delay (250)
+
+}
+
+
+interrupt ()

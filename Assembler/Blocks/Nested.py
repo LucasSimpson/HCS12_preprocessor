@@ -69,7 +69,7 @@ class LongLoopBlock (NestedBlock):
             print 'WARNING: program will not excecute as desired.'
             print 'Too many loops, cannot loop more then 12800 times'
 
-        iterations = factor (self.num_loops)
+        iterations = factor (self.num_loops, 128)
 
         dic = {
             'inside_raw': self.inside_raw,
@@ -80,7 +80,6 @@ class LongLoopBlock (NestedBlock):
 
         raw = templates.long_loop_block ().format (**dic)
         return bf ().create (raw)
-
 
 def get_nested_classes ():
     return [

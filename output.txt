@@ -2,10 +2,6 @@
 ; * Demo program by Lucas Simpson
 ; ***************************************
 
-; ***************************************
-; * Does a delay of 1s
-; ***************************************
-
 ;  export symbols
             XDEF Entry, _Startup            ;  export 'Entry' symbol
             ABSENTRY Entry                  ;  for absolute assembly: mark this as application entry point
@@ -16,46 +12,74 @@ ROMStart    EQU  $400                       ;  absolute address to place my code
             ORG   ROMStart                  
 Entry:                                      
 _Startup:                                   
+            LDAA #$01                       ;  set the LSb (b0), clear all others (b7-b1)
+            STAA DDRJ                       ;  configure uC's Data Direction Register for Port J
+; ***************************************
+; * Code start
+; ***************************************
 
-;  1000ms delay start.
-;  Loop 30 times.
-            LDAA $1E                        
+
+;  Loop 5 times.
+            LDAA #$05                       
             STAA $1501                      
-loop_00     NOP                             
-;  Loop 30 times.
-            LDAA $1E                        
-            STAA $1502                      
-loop_01     NOP                             
-            LDX #999                        
+loop_00     DECA                            
+            STAA $1501                      
+            LDAA #$01                       
+            STAA PTJ                        ;  Turn on LED
+
+;  Delay for 250 ms
+            LDX  #5                         
 delay_00    NOP                             
+            LDY  #50000                     
+delay_01    NOP                             
             NOP                             
             NOP                             
             NOP                             
             NOP                             
+            DBNE Y, delay_01                
             DBNE X, delay_00                
-            LDAA $1502                      
-            DBNE A, loop_01                 
-;  Loop end.
+            LDX  #1                         
+delay_02    DBNE X, delay_03                
+            NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            JMP  delay_02                   
+delay_03    NOP                             
+;  End of delay.
+
+            LDAA #$00                       
+            STAA PTJ                        ;  Turn off LED
+
+;  Delay for 250 ms
+            LDX  #5                         
+delay_04    NOP                             
+            LDY  #50000                     
+delay_05    NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            DBNE Y, delay_05                
+            DBNE X, delay_04                
+            LDX  #1                         
+delay_06    DBNE X, delay_07                
+            NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            JMP  delay_06                   
+delay_07    NOP                             
+;  End of delay.
 
             LDAA $1501                      
-            DBNE A, loop_00                 
+            BGT  loop_00                    
 ;  Loop end.
 
-;  Loop 100 times.
-            LDAA $64                        
-            STAA $1501                      
-loop_02     NOP                             
-            LDX #999                        
-delay_00    NOP                             
-            NOP                             
-            NOP                             
-            NOP                             
-            NOP                             
-            DBNE X, delay_00                
-            LDAA $1501                      
-            DBNE A, loop_02                 
-;  Loop end.
+; ***************************************
+; * Interrupt Vectors
+; ***************************************
 
-
-;  1000ms delay end.
+            ORG   $FFFE                     
+            DC.W  Entry                     ;  Reset Vector
 

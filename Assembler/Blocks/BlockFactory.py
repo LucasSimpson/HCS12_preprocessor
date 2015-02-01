@@ -80,7 +80,7 @@ class BlockFactory (object):
             f.write (output)
             f.close ()
 
-        #print output
+        print output
         print 'Done'
 
     def nested_block (self, raw_):
