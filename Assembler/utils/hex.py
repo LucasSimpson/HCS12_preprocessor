@@ -15,7 +15,7 @@ class Hex (object):
         result = hex (self.num) [2:]
         if len (result) == 1 or len (result) == 3:
             result = '0' + result
-        return '$' + result
+        return '$' + result.upper ()
 
     def inc (self):
         self.num += 1

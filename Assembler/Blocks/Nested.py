@@ -1,75 +1,25 @@
-from Static import *
+import templates
+from Static import BaseBlock
+from BlockFactory import bf
 from ..utils.hex import Hex
+from ..utils.factor import factor
 from ..StackPointer import sp
 from ..LabelGenerator import lg
-
-class BlockFactory ():
-    @classmethod
-    def create (*args, **kwargs):
-        result = []
-        lines = kwargs ['raw'].split ('\n')
-        index = 0
-        while (True):
-            try:
-                lines [index]
-            except IndexError:
-                break
-
-            if lines [index].find ('{') != -1:
-                raw = ''
-                depth = 0
-                while (True):
-                    try:
-                        lines [index]
-                    except IndexError:
-                        print ("Missing right bracket  ('}')")
-                        print 1/0 # crash
-                    
-                    raw += lines [index] + '\n'
-                    if lines [index].find ('{') != -1:
-                        depth += 1
-
-                    if lines [index].find ('}') != -1:
-                        depth -= 1
-
-                    if depth == 0:
-                        index += 1
-                        break
-
-                    index += 1
-
-                command = raw [:raw.find ('{')]
-                inside = raw [raw.find ('{'): raw.rfind ('}')+1]
-                import re
-                for class_ in get_nested_classes ():
-                    match = re.search (class_.get_regex (), command)
-                    if match:
-                        result += [class_ (match, inside)]
-                        
-                        break
-                                        
-            else:
-                if not lines [index].isspace () and lines [index] != '':
-                    command = lines [index]
-                    import re
-                    for class_ in get_static_classes ():
-                        match = re.search (class_.get_regex (), lines [index])
-                        if match:
-                            result += [class_ (match)]
-                    
-                index += 1
-        return result
 
 class NestedBlock (BaseBlock):
     def __init__ (self, match, inside_):
         super (NestedBlock, self).__init__ (match)
         pos_l = inside_.index ('{')
         pos_r = inside_.rindex ('}')
-  
-        self.inside = []
-        self.inside += self.pre_blocks ()
-        self.inside += BlockFactory.create (raw=inside_ [pos_l+1: pos_r])
-        self.inside += self.post_blocks ()
+
+        self.inside_raw = inside_ [pos_l+1: pos_r]
+        self.inside = self.compile_inside ()
+
+    def compile_inside (self):
+        inside = self.pre_blocks ()
+        inside += bf ().create (self.inside_raw)
+        inside += self.post_blocks ()
+        return inside
 
     def pre_blocks (self):
         return []
@@ -84,40 +34,57 @@ class NestedBlock (BaseBlock):
         return result
 
 class LoopBlock (NestedBlock):
-    def __init__ (self, match, inside):
-        super (LoopBlock, self).__init__ (match, inside)
-
-    @classmethod
-    def get_regex (*args):
-        return r'loop \((?P<num_loops>[\d]*)\)'
+    regex = r'loop[\s]*\((?P<num_loops>(1(2[01234567]|[01][\d])|[\d]{1,2}))\)'
 
     def pre_blocks (self):
-        num_loops = Hex (int (self.safe_get_kwarg ('num_loops')) - 1).__str__ ()
+        sp ().inc ()
+
+        num_loops = Hex (int (self.num_loops))
         self.label = lg ().new_label ('loop')
+        dic = {
+            'num_loops': num_loops, 
+            'num_loops_human': int (num_loops),
+            'label': self.label, 
+            'sp': sp ().index (),
+        }
 
-        raw = ''
-        raw += '  LDAA #' + num_loops + ' ; Set up loop counter\n'
-        raw += '  DECA ' + ' ; Decrement loop counter\n'
-        raw += '  STAA ' + sp ().inc () + '\n'
-        raw += self.label + '  NOP ;Loop start\n'
-
-        return BlockFactory.create (raw=raw)
-
+        raw = templates.loop_pre_block ().format (**dic)
+        return bf ().create (raw)
 
     def post_blocks (self):
-        raw = ''
-        raw += '  LDAA ' + sp ().index () + '\n'
-        raw += '  BGE  ' + self.label + ' ; jump to start of loop\n'
+        dic = {'sp':sp().index (), 'label':self.label}
         sp ().dec ()
-        return BlockFactory.create (raw=raw)
-        
 
+        raw = templates.loop_post_block ().format (**dic)
+        return bf ().create (raw)
+        
     def assembly (self):
         return super (LoopBlock, self).assembly ()
+
+class LongLoopBlock (NestedBlock):
+    regex = r'loop[\s]*\((?P<num_loops>[\d]*)\)'
+
+    def compile_inside (self):
+        if int (self.num_loops) > 12800:
+            print 'WARNING: program will not excecute as desired.'
+            print 'Too many loops, cannot loop more then 12800 times'
+
+        iterations = factor (self.num_loops)
+
+        dic = {
+            'inside_raw': self.inside_raw,
+            'outer_num': str (iterations [0]),
+            'inner_num': str (iterations [1]),
+            'offset': str (iterations [2]),
+        }
+
+        raw = templates.long_loop_block ().format (**dic)
+        return bf ().create (raw)
 
 
 def get_nested_classes ():
     return [
         LoopBlock,
+        LongLoopBlock,
         NestedBlock,
     ]

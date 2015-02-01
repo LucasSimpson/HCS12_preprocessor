@@ -1,33 +1,61 @@
-; ******
-; * Test program by Lucas Simpson
-; ******
+; ***************************************
+; * Demo program by Lucas Simpson
+; ***************************************
+
+; ***************************************
+; * Does a delay of 1s
+; ***************************************
+
 ;  export symbols
             XDEF Entry, _Startup            ;  export 'Entry' symbol
             ABSENTRY Entry                  ;  for absolute assembly: mark this as application entry point
 ;  Include derivative-specific definitions 
             INCLUDE 'derivative.inc'        
-ROMStart    EQU  $0400                      ;  absolute address to place my code/constant data
-;  variable/data section
-            ORG RAMStart                    
-;  Insert here your data definition.
+ROMStart    EQU  $400                       ;  absolute address to place my code/constant data
 ;  code section
             ORG   ROMStart                  
-_Startup                                    
-Entry                                       
-            LDS   #RAMEnd+1                 ;  initialize the stack pointer
-            LDAA #$02                       ;  Set up loop counter
+Entry:                                      
+_Startup:                                   
+
+;  1000ms delay start.
+;  Loop 100 times.
+            LDAA $64                        
             STAA $1501                      
-loop_00     NOP                             ;  start
-            NOP                             
-            NOP                             
-            LDAA #$04                       ;  Set up loop counter
+loop_00     NOP                             
+;  Loop 100 times.
+            LDAA $64                        
             STAA $1502                      
-loop_01     NOP                             ;  start
+loop_01     NOP                             
+            LDX #999                        
+delay_00    NOP                             
             NOP                             
             NOP                             
+            NOP                             
+            NOP                             
+            DBNE X, delay_00                
             LDAA $1502                      
-            BGE  loop_01                    ;  jump to start of loop
+            DBNE A, loop_01                 
+;  Loop end.
 
             LDAA $1501                      
-            BGE  loop_00                    ;  jump to start of loop
+            DBNE A, loop_00                 
+;  Loop end.
+
+;  Loop 0 times.
+            LDAA $00                        
+            STAA $1501                      
+loop_02     NOP                             
+            LDX #999                        
+delay_00    NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            NOP                             
+            DBNE X, delay_00                
+            LDAA $1501                      
+            DBNE A, loop_02                 
+;  Loop end.
+
+
+;  1000ms delay end.
 
