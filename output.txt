@@ -18,12 +18,12 @@ Entry:
 _Startup:                                   
 
 ;  1000ms delay start.
-;  Loop 100 times.
-            LDAA $64                        
+;  Loop 30 times.
+            LDAA $1E                        
             STAA $1501                      
 loop_00     NOP                             
-;  Loop 100 times.
-            LDAA $64                        
+;  Loop 30 times.
+            LDAA $1E                        
             STAA $1502                      
 loop_01     NOP                             
             LDX #999                        
@@ -41,8 +41,8 @@ delay_00    NOP
             DBNE A, loop_00                 
 ;  Loop end.
 
-;  Loop 0 times.
-            LDAA $00                        
+;  Loop 100 times.
+            LDAA $64                        
             STAA $1501                      
 loop_02     NOP                             
             LDX #999                        
